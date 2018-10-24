@@ -1,65 +1,79 @@
+console.log("Hi");
 
-console.log("Hi")
-/*
+window.onload = function(e) {
+  /*
 Just draw a border round the document.body.
 */
-var elements = document.querySelectorAll('.container');
-for(var i=0; i<elements.length; i++){
-    elements[i].style.width = "100%";
-}
+  console.log("onload");
 
-var githubWideWidthCookieName = "githubWideWidthCookie"
+  var githubWideWidthCookieName = "githubWideWidthCookie";
 
-
-function setCookie(name, value, days) {
+  function setCookie(value) {
     var githubWideCookie = {
-        name: githubWideWidthCookieName,
-        value: value
-    }
-    browser.storage.local.set(value)
-}
-function getCookie(name) {
-    return browser.storage.local.get("githubWideCookie")
-}
+      name: githubWideWidthCookieName,
+      value: value
+    };
+    browser.storage.local.set(githubWideCookie);
+  }
 
-function insertCSS(width) {
+  function getCookie(name) {
+    var githubWideCookie = browser.storage.local.get("githubWideCookie");
+    if (githubWideCookie != null) {
+      return githubWideCookie.value;
+    }
+    return "";
+  }
+
+  function insertCSS(width) {
     var css = "body { border: 20px dotted pink; }";
     browser.tabs.insertCSS({ code: css });
-}
+  }
 
-var githubWideWidthDefault = "100"
-var savedValue = getCookie(githubWideWidthCookieName)
+  function sendMessag(width) {
+    function send(tabs) {
+      browser.tabs.sendMessage(tabs[0].id, {
+        width: width
+      });
+    }
+    function onError(error) {
+      console.error(`Error: ${error}`);
+    }
+    browser.tabs
+      .query({ active: true, currentWindow: true })
+      .then(send)
+      .catch(onError);
+  }
 
-var localWidth = ""
-if (savedValue == "") {
-    localWidth = githubWideWidthDefault
-} else {
-    localWidth = savedValue
-}
-var slider = document.getElementById("myRange");
-var output = document.getElementById("demo");
-output.innerHTML = slider.value;
-output.innerHTML = output.innerHTML + "%"
+  var githubWideWidthDefault = "100";
+  var savedValue = getCookie(githubWideWidthCookieName);
 
-slider.oninput = function () {
-    console.log(this.value)
+  var localWidth = "";
+  if (savedValue == "") {
+    localWidth = githubWideWidthDefault;
+  } else {
+    localWidth = savedValue;
+  }
+  var slider = document.getElementById("myRange");
+  var output = document.getElementById("demo");
+  output.innerHTML = slider.value;
+  output.innerHTML = output.innerHTML + "%";
+
+  slider.oninput = function() {
+    console.log(this.value);
     output.innerHTML = this.value;
-    output.innerHTML = output.innerHTML + "%"
-    setCookie(githubWideWidthCookieName, this.value, 1000)
-}
+    output.innerHTML = output.innerHTML + "%";
+    // updateWidth(this.value);
+    setCookie(this.value);
+    sendMessag(this.value);
+  };
 
-var elements = document.querySelectorAll('.container');
-for (var i = 0; i < elements.length; i++) {
-    elements[i].style.width = localWidth + "%";
-}
+  // Use this to detect when the css was update to override it
+  // // var observer = new MutationObserver(function(mutations) {
+  //     mutations.forEach(function(mutationRecord) {
+  //         console.log('style changed!');
+  //     });
+  // });
 
-// Use this to detect when the css was update to override it
-// // var observer = new MutationObserver(function(mutations) {
-//     mutations.forEach(function(mutationRecord) {
-//         console.log('style changed!');
-//     });    
-// });
-
-// var target = document.getElementById('myId');
-// observer.observe(target, { attributes : true, attributeFilter : ['style'] });
-
+  // var target = document.getElementById('myId');
+  // observer.observe(target, { attributes : true, attributeFilter : ['style'] });
+};
