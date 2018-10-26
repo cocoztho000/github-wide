@@ -1,0 +1,77 @@
+<head>
+    <meta charset="utf-8" />
+    <script src="github_wide.js?v=1.0.0"></script>
+</head>
+<html>
+    <style>
+        body {
+            width: 300px;
+            color: #212121;
+            font-size: 20px;
+            text-align: center;
+            font-family: Roboto,Helvetica Neue,Helvetica,Arial,sans-serif;
+        }
+
+        .slidecontainer {
+            width: 100%;
+            text-align: center;
+        }
+
+        .slider {
+            -webkit-appearance: none;
+            width: 80%;
+            height: 15px;
+            border-radius: 5px;
+            background: #212121;
+            outline: none;
+            -webkit-transition: .2s;
+            transition: opacity .2s;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #303F9F;
+            cursor: pointer;
+        }
+
+        #title {
+            margin: 0;
+            padding: 0;
+        }
+        #icon {
+            margin: 4px 0 20px 0;
+        }
+
+        input[type=range]::-moz-range-track {
+            background: #212121;
+            border: none;
+        }
+        input[type=range]::-moz-range-thumb {
+            background: #303F9F;
+            border: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #303F9F;
+            cursor: pointer;
+        }
+        #err {
+            font-size: 10px;
+            color: red;
+        }
+    </style>
+
+    <body>
+        <p id="title">IBM Tools - Github Wide</p>
+        <img id="icon" src="icons/icon.png"/>  
+        <div class="slidecontainer">
+            <input type="range" min="1" max="100" class="slider" id="myRange">
+            <p>Width: <span id="demo"></span></p>
+            <p><span id="err"></span></p>
+        </div>
+    </body>
+</html>
