@@ -1,79 +1,107 @@
-console.log("Hi");
-
 window.onload = function(e) {
-  /*
-Just draw a border round the document.body.
-*/
-  console.log("onload");
+  console.log("Loaded Github Wide Addon");
 
   var githubWideWidthCookieName = "githubWideWidthCookie";
+  var githubWideWidthDefault = "100";
+  var slider = document.getElementById("myRange");
+  var output = document.getElementById("demo");
+  var err = document.getElementById("err");
+  var githubUrlRegex = ".*\:\/\/.*github\.com\/.*";
 
-  function setCookie(value) {
+  // Save value user defines with the slider
+  function setSavedData(newValue) {
     var githubWideCookie = {
       name: githubWideWidthCookieName,
-      value: value
+      value: newValue
     };
+    console.log("Setting Saved Data: " + newValue);
     browser.storage.local.set(githubWideCookie);
   }
 
-  function getCookie(name) {
-    var githubWideCookie = browser.storage.local.get("githubWideCookie");
-    if (githubWideCookie != null) {
-      return githubWideCookie.value;
-    }
-    return "";
+  // Update addon ui id="demo" with the new width
+  function updateAddonUIPercent(width) {
+    console.log("Setting slider width too: " + width);
+    output.innerHTML = width + "%";
   }
 
-  function insertCSS(width) {
-    var css = "body { border: 20px dotted pink; }";
-    browser.tabs.insertCSS({ code: css });
+  // Update slider with a new width
+  function updateAddonUISlider(width) {
+    console.log("Setting slider width too: " + width);
+    slider.value = width;
   }
 
-  function sendMessag(width) {
-    function send(tabs) {
-      browser.tabs.sendMessage(tabs[0].id, {
-        width: width
-      });
-    }
+  function isGithubURL(tempURL) {
+    var patt = new RegExp(githubUrlRegex);
+    return patt.test(tempURL);
+  }
+
+  // Sends data to the listener running in the webpage
+  function sendMessageToWebpage(newWidth) {
+    console.log("Sending new width to webpage: " + newWidth);
+
     function onError(error) {
-      console.error(`Error: ${error}`);
+      if (error !== null){
+        console.error("Error: " + error);
+      }
     }
+
+    function send(tabs) {
+      // We can't save the preference if there is no github page open since
+      // the preference is stored as a cookie in the webpage
+      var foundGithubTab = false;
+
+      // Loop through all the tabs looking for an open github tab
+      for (let tab of tabs) {
+
+        // Update github webpages that are open with new width
+        if (isGithubURL(tab.url)) {
+          foundGithubTab = true;
+          browser.tabs
+            .sendMessage(tab.id, {
+              width: newWidth
+            })
+            .then(response => {
+              setSavedData(newWidth);
+
+              console.log("Succesfully Set width to: " + newWidth + "! :)");
+              console.log(response.response);
+            })
+            .catch(onError);
+        }
+      }
+
+      if (!foundGithubTab) {
+        console.log("Failed to set new width! :(")
+        err.innerHTML = "Failed to save your new width. Open a github page";
+      }
+    }
+
+    // Gather all the open tabs
     browser.tabs
-      .query({ active: true, currentWindow: true })
+      .query({})
       .then(send)
       .catch(onError);
   }
 
-  var githubWideWidthDefault = "100";
-  var savedValue = getCookie(githubWideWidthCookieName);
+  // Load the previously stored width from storage
+  browser.storage.local.get().then(function(options) {
+    console.log("Loaded Storage");
+    console.log(options);
 
-  var localWidth = "";
-  if (savedValue == "") {
-    localWidth = githubWideWidthDefault;
-  } else {
-    localWidth = savedValue;
-  }
-  var slider = document.getElementById("myRange");
-  var output = document.getElementById("demo");
-  output.innerHTML = slider.value;
-  output.innerHTML = output.innerHTML + "%";
+    var localWidth = "";
+    if (options.value === undefined) {
+      localWidth = githubWideWidthDefault;
+    } else {
+      localWidth = options.value;
+    }
+    updateAddonUIPercent(localWidth);
+    updateAddonUISlider(localWidth);
+  });
 
+  // Define listener for when the user moves the slider
   slider.oninput = function() {
-    console.log(this.value);
-    output.innerHTML = this.value;
-    output.innerHTML = output.innerHTML + "%";
-    // updateWidth(this.value);
-    setCookie(this.value);
-    sendMessag(this.value);
+    console.log("Atempting to set new width: " + this.value);
+    sendMessageToWebpage(this.value);
+    updateAddonUIPercent(this.value);
   };
-
-  // Use this to detect when the css was update to override it
-  // // var observer = new MutationObserver(function(mutations) {
-  //     mutations.forEach(function(mutationRecord) {
-  //         console.log('style changed!');
-  //     });
-  // });
-
-  // var target = document.getElementById('myId');
-  // observer.observe(target, { attributes : true, attributeFilter : ['style'] });
 };

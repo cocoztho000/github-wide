@@ -1,12 +1,13 @@
 {
 
-  "description": "Adds a solid red border to all webpages matching mozilla.org. See https://developer.mozilla.org/en-US/Add-ons/WebExtensions/Examples#borderify",
+  "description": "Allow user to modify the width of thier github page",
   "manifest_version": 2,
-  "name": "Borderify",
+  "name": "Github Wide",
   "version": "1.0",
-  "homepage_url": "https://github.com/mdn/webextensions-examples/tree/master/borderify",
+  "homepage_url": "http://cocozzello.com",
   "icons": {
-    "48": "icons/border-48.png"
+    "48": "icons/icon.png",
+    "96": "icons/icon@2x.png"
   },
 
   "content_scripts": [
@@ -16,11 +17,12 @@
     }
   ],
   "browser_action": {
-    "default_icon": "icons/wrench.png",
-    "default_title": "IBM Tools",
+    "default_icon": "icons/icon@2x.png",
+    "default_title": "IBM Tools - Github Wide",
     "default_popup": "index.html"
   },
   "permissions": [
+    "tabs",
     "storage", 
     "activeTab",
     "contextMenus",
