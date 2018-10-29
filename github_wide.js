@@ -6,7 +6,7 @@ window.onload = function(e) {
   var slider = document.getElementById("myRange");
   var output = document.getElementById("demo");
   var err = document.getElementById("err");
-  var githubUrlRegex = ".*\:\/\/.*github\.com\/.*";
+  var githubUrlRegex = ".*://.*github.com/.*";
 
   // Save value user defines with the slider
   function setSavedData(newValue) {
@@ -40,7 +40,7 @@ window.onload = function(e) {
     console.log("Sending new width to webpage: " + newWidth);
 
     function onError(error) {
-      if (error !== null){
+      if (error !== null) {
         console.error("Error: " + error);
       }
     }
@@ -52,7 +52,6 @@ window.onload = function(e) {
 
       // Loop through all the tabs looking for an open github tab
       for (let tab of tabs) {
-
         // Update github webpages that are open with new width
         if (isGithubURL(tab.url)) {
           foundGithubTab = true;
@@ -71,7 +70,7 @@ window.onload = function(e) {
       }
 
       if (!foundGithubTab) {
-        console.log("Failed to set new width! :(")
+        console.log("Failed to set new width! :(");
         err.innerHTML = "Failed to save your new width. Open a github page";
       }
     }

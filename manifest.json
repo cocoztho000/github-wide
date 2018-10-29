@@ -1,5 +1,4 @@
 {
-
   "description": "Allow user to modify the width of thier github page",
   "manifest_version": 2,
   "name": "Github Wide",
@@ -23,7 +22,7 @@
   },
   "permissions": [
     "tabs",
-    "storage", 
+    "storage",
     "activeTab",
     "contextMenus",
     "notifications",
